@@ -1,0 +1,51 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+	<dimen name="order_detail_text_size">21sp</dimen>
+	<dimen name="table_menu_box_size">150dp</dimen>
+	<dimen name="common_circle_width">3dp</dimen>
+	<dimen name="progress_circle_radius">34dp</dimen>
+	<dimen name="alert_width">340dp</dimen>    <!-- 290dp -->
+		
+	<!-- 标题栏高度 -->
+	<dimen name="tittle_height">60dp</dimen> 
+	
+	<!-- 标题栏两边布局宽度 -->
+	<dimen name="tittle_side_layout_width">100dp</dimen> 
+
+	<!-- 标题图标大小 -->
+	<dimen name="tittle_icon_width">40dp</dimen> 		
+	<dimen name="tittle_icon_height">30dp</dimen> 
+	<!-- 桌台主页字体大小 -->
+	<dimen name="table_main_txt_20">20sp</dimen>
+	<dimen name="table_main_txt_25">25sp</dimen>
+	
+	<!-- 桌子ITEM大小 -->
+	<dimen name="table_main_item_size">90dp</dimen>
+	<!-- 桌子ITEM圆角大小 -->
+	<dimen name="table_main_item_corner">5dp</dimen>
+	<!-- 桌子ITEM内边距 -->
+	<dimen name="table_main_item_padding">5dp</dimen>
+	 
+		
+	<!-- 设置页面字符大小 -->
+	<dimen name="setting_txt_25">25sp</dimen> 
+	<dimen name="setting_txt_20">20sp</dimen>
+	<dimen name="setting_txt_18">18sp</dimen>
+	<dimen name="setting_txt_16">16sp</dimen>
+	<!-- 设置页面list item height -->
+	<dimen name="setting_list_item_height">60dp</dimen>
+	
+	<!-- 预订相关 -->
+	<dimen name="booking_btn_margin">80dp</dimen>
+	<dimen name="booking_txt_25">25sp</dimen>
+	<dimen name="booking_text_width">100dp</dimen>
+	<dimen name="booking_edit_width">400dp</dimen>
+	<dimen name="booking_edit_height">40dp</dimen>
+	<dimen name="booking_padding">20dp</dimen>
+	
+	<!--结账界面字体大小  -->
+	<dimen name="checkout_txt_22">22sp</dimen>
+	
+</resources>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:paddingTop="20dp" 
+    android:paddingBottom="20dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="40dp">
+
+    <LinearLayout        
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"        
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <!--   android:textStyle="bold" -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:layout_height="50.0dp"
+            android:background="@drawable/custom_dlg_tittle_bg"
+            android:gravity="center"
+            android:textSize="@dimen/setting_txt_25"
+            android:textColor="#ad8c63"          
+            android:text="@string/alert_confirm"
+            android:visibility="visible" />
+
+       <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#F5F3F0"
+            android:gravity="center"
+            android:orientation="vertical"
+             >
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+               
+                android:lineSpacingMultiplier="1.5"                
+                android:minHeight="120.0dip"
+                android:paddingBottom="15.0dip"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip"
+                android:paddingTop="15.0dip" 
+                android:textSize="@dimen/setting_txt_18"
+                android:textColor="#44484a"
+                android:text="@string/dialog5_text"/>
+            
+            <!--  android:gravity="center" -->
+      
+            
+        </LinearLayout>
+        
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1.0px"
+            android:background="#ffd0d0d0" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="63dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/custom_dlg_bottom_bg"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/positiveButton"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:background="@drawable/set_tableid_btn_selector"
+                android:gravity="center"
+                android:textSize="@dimen/setting_txt_20"
+                android:textColor="#ffffff"
+                android:text="calcel" />
+
+            <Button
+                android:id="@+id/negativeButton"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:background="@drawable/set_tableid_btn_selector"
+                android:layout_marginLeft="50dp"                
+                android:gravity="center"
+                android:textSize="@dimen/setting_txt_20"
+                android:textColor="#ffffff"
+                android:text="next" 
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>
