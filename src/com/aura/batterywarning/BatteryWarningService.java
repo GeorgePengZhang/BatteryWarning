@@ -1,7 +1,24 @@
 package com.aura.batterywarning;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import android.app.AlertDialog;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -10,306 +27,255 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 
-import android.app.AlertDialog;
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.os.IBinder;
-import android.os.Looper;
-import android.provider.Settings.Secure;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+public class BatteryWarningService extends Service {
+	
+	private int dialogType = Utils.DIALOG_TYPE_NONE;
+	
+	private Handler mHandler = new Handler();
 
-public class BatteryWarningService extends Service{
-	
 	private AlertDialog myDialog = null;
-	private AlertDialog myDialog2 = null;
-	private AlertDialog myDialog3 = null;
-	private AlertDialog myDialog4 = null;
-	private AlertDialog myDialog5 = null;
-	private AlertDialog myDialog6 = null;
-	
-	
-	private long delay;
-	private long period;
-	
-	private  Timer checkBatteryTimer;
+
+	private Timer checkBatteryTimer;
 	private CheckBatteryTask checkBatteryTask;
-	
-//	public static boolean removedBatteryFlag = false ;
-	
-	class CheckBatteryTask extends TimerTask{
+
+	class CheckBatteryTask extends TimerTask {
 
 		@Override
 		public void run() {
-			
-			Looper.prepare();
-		
-			warningDialog();
-			
-			Looper.loop();
-			
+			Log.d("TAG", "CheckBatteryTask:"+MyApp.readRemovedBatteryFlag());
+			if (!myDialog.isShowing()&& !MyApp.readRemovedBatteryFlag()) {
+				mHandler.post(new Runnable() {
+					
+					@Override
+					public void run() {
+						showDialog(Utils.DIALOG_TYPE_0);
+					}
+				});
+			}
 		}
-		
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
-	}  
+	}
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		showDialog(Utils.DIALOG_TYPE_0);
+		startTimer();
+		return START_STICKY;
+	}
 	
-	 @Override  
-	    public void onCreate() {  
-	        super.onCreate();  
-	    }  
-	  
-	    @Override  
-	    public void onStart(Intent intent, int startId) {  
-	        super.onStart(intent, startId);  
-	    }  
-	  
-	  
-	    @Override  
-	    public int onStartCommand(Intent intent, int flags, int startId) {  
-	        
-//	        Toast.makeText(BatteryWarningService.this, "服务开启了" , 1).show();
-//	        
-	        warningDialog();
-	        
-	        
-	        return START_STICKY;
-	    }
-	    
-	    private void warningDialog5(){
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		stopTimer();
+	}
 	
-	    }
-	    
-	    private void warningDialog4(){
-    	myDialog4 = new AlertDialog.Builder(BatteryWarningService.this).create();  
+	private void startTimer() {
+		stopTimer();
+		
+		checkBatteryTimer = new Timer();
+		checkBatteryTask = new CheckBatteryTask();
+		checkBatteryTimer.schedule(checkBatteryTask, Utils.BATTERY_DIALOG_DELAY, Utils.BATTERY_DIALOG_PERIOD);
+	}
+	
+	private void stopTimer() {
+		if (checkBatteryTimer != null) {
+			checkBatteryTimer.cancel();
+		}
+		
+		if (checkBatteryTask != null) {
+			checkBatteryTask.cancel();
+		}
+	}
+	
+	private void showDialog(int type) {
+		dialogType = type;
+		
+		if (myDialog == null) {
+			myDialog = new AlertDialog.Builder(this).create();
+			myDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+		}
+		
+		myDialog.show();
+		myDialog.setCancelable(false);
+		myDialog.getWindow().setContentView(R.layout.alertdialog_layout);
+		
+		TextView messageText = (TextView) myDialog.findViewById(R.id.message);
+		Button positiveButton = (Button) myDialog.findViewById(R.id.positiveButton);
+		Button negativeButton = (Button) myDialog.findViewById(R.id.negativeButton);
+		positiveButton.setOnClickListener(myClick);
+		negativeButton.setOnClickListener(myClick);
+		
+		switch (type) {
+		case Utils.DIALOG_TYPE_0:
 			
-    	myDialog4.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);			
-    	myDialog4.show();  
-            
-    	myDialog4.getWindow().setContentView(R.layout.alertdialog_layout5);  
-    	myDialog4.setCancelable(false);
-
-	    	Button btn = (Button) myDialog4.getWindow().findViewById(R.id.positiveButton);
-	    	btn.setText("back"); 
-	    	
-	    	myDialog4.getWindow()  
-                .findViewById(R.id.positiveButton)   //上一步()
-                .setOnClickListener(new View.OnClickListener() {  
-                @Override  
-                public void onClick(View v) {  
-                	myDialog4.dismiss(); 
-                	warningDialog3();
-
-                }  
-            });  
-            
-	    	Button btn2 = (Button) myDialog4.getWindow().findViewById(R.id.negativeButton);
-	    	btn2.setText("confirm"); 
-	    	
-	    	myDialog4.getWindow()  
-            .findViewById(R.id.negativeButton)  //	Confirm（点确定时，提交数据到后台）
-            .setOnClickListener(new View.OnClickListener() {  
-            	@Override  
-            	public void onClick(View v) {  
-            		myDialog4.dismiss();  
-            		
-            		 HttpUtils http = new HttpUtils();
-                     
-                   RequestParams params = new RequestParams();
-                   
-                   String deviceId2 = Secure.getString(getContentResolver(), Secure.ANDROID_ID);//序列号
-                   System.out.println("设备的序列号为：" + deviceId2);
-                   
-//                   TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE); 
-//                   String deviceId = TelephonyMgr.getDeviceId(); 
-//                   System.out.println("设备的序列号为：" + deviceId);
-//                   Toast.makeText(BatteryWarningService.this, "设备的序列号为：" + deviceId, 1).show();
-                                                    
-                   String deviceModel = android.os.Build.MODEL;//设置型号
-                   System.out.println("设备的型号为：" + deviceModel);
-//                   Toast.makeText(BatteryWarningService.this, "设备的型号为：" + deviceModel, 1).show();
-                   
-                   params.addBodyParameter("Model", deviceModel);
-                   params.addBodyParameter("SerialNum", deviceId2);
-                   params.addBodyParameter("pickStatus", "1");  //1：已经摘取 0：未摘取
-                   
-                   
-//                   http://192.168.1.30:45231/webStatisticsSer/
-//                   http.send(HttpRequest.HttpMethod.POST, "ip:45231/webStatisticsSer/web/addDeviceServlet", params, callBack)
-                   http.send(HttpRequest.HttpMethod.POST, "http://192.168.1.30:45231/webStatisticsSer/web/addDeviceServlet", params, new RequestCallBack<String>() {
-
-						@Override
-						public void onFailure(HttpException error, String msg) {
-							Toast.makeText(BatteryWarningService.this, "The operation failure" , 1).show();
-							
-							//上传失败时，开启定时器
-							delay = 15*60*1000;
-			        		period = 15*60*1000; 
-//			        		period = 20*1000;
-			        		checkBatteryTimer = new Timer();
-			        		checkBatteryTask = new CheckBatteryTask();           		
-			        		checkBatteryTimer.schedule(checkBatteryTask, delay, period);//每隔15分钟
-							
-						}
-
-						@Override
-						public void onSuccess(ResponseInfo<String> responseInfo) {
-							
-//							removedBatteryFlag = true ;
-							MyApp.saveRemovedBatteryFlag(true);
-							
-						
-							Toast.makeText(BatteryWarningService.this, "Operation is successful" , 1).show();
-							
-							//上传成功后看是否需要将服务关闭
-							
-						}
-					});
-            	}  
-            });
-	    }
-	    
-	    private void warningDialog3(){
-	    	myDialog3 = new AlertDialog.Builder(BatteryWarningService.this).create();  
-			
-	    	myDialog3.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);			
-	    	myDialog3.show();  
-            
-	    	myDialog3.getWindow().setContentView(R.layout.alertdialog_layout4);  
-	    	myDialog3.setCancelable(false);
-	    	
-	    	Button btn = (Button) myDialog3.getWindow().findViewById(R.id.positiveButton);
-	    	btn.setText("back"); 
-	    	
-	    	myDialog3.getWindow()  
-                .findViewById(R.id.positiveButton)   
-                .setOnClickListener(new View.OnClickListener() {  
-                @Override  
-                public void onClick(View v) {  
-                	myDialog3.dismiss();            
-                	warningDialog2();
-                }  
-            });  
-            
-	    	myDialog3.getWindow()  
-            .findViewById(R.id.negativeButton)  
-            .setOnClickListener(new View.OnClickListener() {  
-            	@Override  
-            	public void onClick(View v) {  
-            		myDialog3.dismiss();    
-            		warningDialog4();
-            	}  
-            });
-	    }
-	    
-	    private void warningDialog2(){
-	    	myDialog2 = new AlertDialog.Builder(BatteryWarningService.this).create();  
-			
-	    	myDialog2.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);			
-	    	myDialog2.show();  
-            
-	    	myDialog2.getWindow().setContentView(R.layout.alertdialog_layout);  
-	    	myDialog2.setCancelable(false);
-	    	TextView tv = (TextView) myDialog2.getWindow().findViewById(R.id.message);
-	    	tv.setText("In order to ensure your safety,we would like to advise you to remove the battery from your Telpad dock. The Telpad will continue to operate via a plugged power adapter.");
-	    	
-	    	Button btn = (Button) myDialog2.getWindow().findViewById(R.id.positiveButton);
-	    	btn.setText("back");   //previous
-	    	
-	    	myDialog2.getWindow()  
-                .findViewById(R.id.positiveButton)   //
-                .setOnClickListener(new View.OnClickListener() {  
-                @Override  
-                public void onClick(View v) {  
-                	myDialog2.dismiss();  
-                	warningDialog();
-
-                }  
-            });  
-            
-	    	myDialog2.getWindow()  
-            .findViewById(R.id.negativeButton)  //	
-            .setOnClickListener(new View.OnClickListener() {  
-            	@Override  
-            	public void onClick(View v) {  
-            		myDialog2.dismiss();     
-            		warningDialog3();
-            	}  
-            });
-	    }
-	    
-	    private void warningDialog() {
-			myDialog = new AlertDialog.Builder(BatteryWarningService.this).create();  
-			
-			myDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);			
-            myDialog.show();  
-            
-            myDialog.getWindow().setContentView(R.layout.alertdialog_layout);  
-            TextView tv = (TextView) myDialog.getWindow().findViewById(R.id.message);
-            if (MyApp.isNetConnect()) {
-            	tv.setText(getResources().getString(R.string.step_one));
-			}else {
-				
-				tv.setText(getResources().getString(R.string.connectTheInternetTip));
+			if (MyApp.isNetConnect()) {
+				messageText.setText(getResources().getString(R.string.dialog3_text));
+			} else {
+				messageText.setText(getResources().getString(R.string.connectTheInternetTip));
 			}
-            myDialog.setCancelable(false);
-            myDialog.getWindow()  
-                .findViewById(R.id.positiveButton)   //取消（取消时开启定时器15分钟后，再次弹框）
-                .setOnClickListener(new View.OnClickListener() {  
-                @Override  
-                public void onClick(View v) {  
-                    myDialog.dismiss();     
-                    
-            	delay = 15*60*1000;
-        		period = 15*60*1000; 
-//        		delay = 15*1000;
-//        		period = 15*1000; 
-        		checkBatteryTimer = new Timer();
-        		checkBatteryTask = new CheckBatteryTask();           		
-        		checkBatteryTimer.schedule(checkBatteryTask, delay, period);//每隔15分钟
+			
+			positiveButton.setText(R.string.cancel);
+			negativeButton.setText(R.string.next);
+			break;
+		case Utils.DIALOG_TYPE_1:
+			messageText.setText(getResources().getString(R.string.dialog4_text));
+			positiveButton.setText(R.string.back);
+			negativeButton.setText(R.string.next);
+			break;
+		case Utils.DIALOG_TYPE_2:
+			messageText.setText(getResources().getString(R.string.dialog5_text));
+			positiveButton.setText(R.string.back);
+			negativeButton.setText(R.string.confirm);	
+			break;
 
-                }  
-            });  
-            
-            myDialog.getWindow()  
-            .findViewById(R.id.negativeButton)  	
-            .setOnClickListener(new View.OnClickListener() {  
-            	@Override  
-            	public void onClick(View v) { 
-            		myDialog.dismiss(); 
-            		
-            		if (MyApp.isNetConnect()) {
-                		warningDialog2();
-					}else {
+		default:
+			break;
+		}
+	}
+	
+	
+	
+	Click myClick = new Click();
+	
+	class Click implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			int id = v.getId();
+			
+			if (myDialog != null) {
+				myDialog.dismiss();
+			}
+			
+			switch (dialogType) {
+			case Utils.DIALOG_TYPE_0:
+				if (R.id.positiveButton == id) {
+					startTimer();
+				} else if (R.id.negativeButton == id) {
+					if (MyApp.isNetConnect()) {
+						showDialog(Utils.DIALOG_TYPE_1);
+					} else {
+						startTimer();
 						openSettings();
 					}
+				}
+				break;
+			case Utils.DIALOG_TYPE_1:
+				if (R.id.positiveButton == id) {
+					showDialog(Utils.DIALOG_TYPE_0);
+				} else if (R.id.negativeButton == id) {
+					showDialog(Utils.DIALOG_TYPE_2);
+				}
+				break;
+			case Utils.DIALOG_TYPE_2:
+				if (R.id.positiveButton == id) {
+					showDialog(Utils.DIALOG_TYPE_1);
+				} else if (R.id.negativeButton == id) {
+					sendDialogResult();
+				}
+				break;
 
-            		   
-            	}  
-            });
-            
+			default:
+				break;
+			}
 		}
+	}
 
-	    private void openSettings(){
-	    	Intent intent = new Intent();
-	    	ComponentName cn = new ComponentName("com.android.settings", "com.android.settings.Settings");
-	    	intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    	intent.setComponent(cn);
-	    	startActivity(intent);
-	    	
-	    }
-		
+	private void openSettings() {
+		Intent intent = new Intent();
+		ComponentName cn = new ComponentName("com.android.settings", "com.android.settings.Settings");
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setComponent(cn);
+		startActivity(intent);
+	}
 
-		
+	private void sendDialogResult() {
+		HttpUtils http = new HttpUtils();
+		RequestParams params = new RequestParams();
+//		String deviceId2 = Secure.getString(getContentResolver(), Secure.ANDROID_ID);// 序列号
+		String deviceId2 = getRKSerial();
+		System.out.println("设备的序列号为：" + deviceId2);
 
+		String deviceModel = android.os.Build.MODEL;// 设置型号
+		System.out.println("设备的型号为：" + deviceModel);
+
+		params.addBodyParameter("Model", deviceModel);
+		params.addBodyParameter("SerialNum", deviceId2);
+		params.addBodyParameter("pickStatus", "1"); // 1：已经摘取  0：未摘取
+		startTimer();
+		http.send(HttpRequest.HttpMethod.POST, Utils.BATTERY_URL,
+				params, new RequestCallBack<String>() {
+
+					@Override
+					public void onFailure(HttpException error, String msg) {
+						Log.d("TAG", "onFailure:"+msg);
+						Toast.makeText(BatteryWarningService.this, getString(R.string.falied), Toast.LENGTH_SHORT).show();
+						startTimer();
+					}
+
+					@Override
+					public void onSuccess(ResponseInfo<String> responseInfo) {
+						Log.d("TAG", "onSuccess");
+						MyApp.saveRemovedBatteryFlag(true);
+						Toast.makeText(BatteryWarningService.this,getString(R.string.success), Toast.LENGTH_SHORT).show();
+						stopSelf();
+					}
+				});
+	}
 	
+	private static String getRKSerial() {
+    	
+        File sectorName = new File("/proc/rknand_sector");
+        char buf[] = new char[32];
+        String sn = "unknown";
+
+        if (sectorName.exists()) {
+            FileReader fread = null;
+            BufferedReader buffer = null;
+            try {
+                fread = new FileReader(sectorName);
+                buffer = new BufferedReader(fread);
+                if (buffer.read(buf, 0, 32) == 32) {
+                    int len = buf[0] | (buf[1] << 8);
+                    if (len > 0)
+                        sn = new String(buf, 2, len);
+                    Log.d("Build", "len=" + len + ", sn=" + sn);
+                }
+
+            } catch (Exception e) {
+            } finally {
+            	if ( buffer != null ) {
+            		try {
+						buffer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+            		buffer = null;
+            	}
+            	
+            	if ( fread != null ) {
+            		try {
+						fread.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+            		fread = null;
+            	}
+            
+            }
+        }
+		
+        return sn.substring(sn.indexOf(':')+1);
+        
+    }
 
 }
