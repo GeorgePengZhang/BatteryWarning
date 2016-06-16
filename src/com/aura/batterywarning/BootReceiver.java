@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo.State;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver {
@@ -14,36 +14,22 @@ public class BootReceiver extends BroadcastReceiver {
 			
 		String action = intent.getAction();
 		boolean readRemovedBatteryFlag = MyApp.readRemovedBatteryFlag();
-		
-		if ("android.intent.action.BOOT_COMPLETED".equals(action)) {
-			
-			if(!readRemovedBatteryFlag){
+		Log.d("TAG", "readRemovedBatteryFlag:"+readRemovedBatteryFlag+",action:"+action);
+		if(!readRemovedBatteryFlag){
+			if ("android.intent.action.BOOT_COMPLETED".equals(action) || "android.intent.action.USER_PRESENT".equals(action)) {
 				Intent i = new Intent(context,BatteryWarningService.class);
 				context.startService(i);
-			}
-		}else if ("android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {
-			State wifiState = null;
-			ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			wifiState = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-			if (wifiState != null && State.CONNECTED != wifiState) {
-				
-				//网络断开
-				
-			}else if (wifiState != null && State.CONNECTED == wifiState) {
-				if(!readRemovedBatteryFlag){
-					Intent i = new Intent(context,BatteryWarningService.class);
-					context.startService(i);
-				}
+			}else if ("android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {
+				ConnectivityManager cmanger = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	        	NetworkInfo netInfo = cmanger.getActiveNetworkInfo();
+	        	if(netInfo != null) {
+	        		if(netInfo.getType() == ConnectivityManager.TYPE_WIFI && netInfo.isConnected()) {
+	        			Intent i = new Intent(context,BatteryWarningService.class);
+						context.startService(i);
+	        		}
+	        	}
 			}
 		}
-		
-		
-		
-//		if(!BatteryWarningService.removedBatteryFlag){
-//			Intent i = new Intent(context,BatteryWarningService.class);
-//			context.startService(i);
-//		}
-		
 	}
 
 }
