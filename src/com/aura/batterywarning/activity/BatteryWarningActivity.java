@@ -123,16 +123,16 @@ public class BatteryWarningActivity extends BaseActivity {
 	private void sendDialogResult() {
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
-		String deviceId2 = Utils.getRKSerial();
-		System.out.println("设备的序列号为：" + deviceId2);
+		String deviceId2 = Utils.getModelNumber();
+		Log.d("TAG","sendDialogResult deviceId2:" + deviceId2);
 
 		String deviceModel = android.os.Build.MODEL;// 设置型号
-		System.out.println("设备的型号为：" + deviceModel);
+		Log.d("TAG","sendDialogResult deviceModel:" + deviceModel);
 
 		params.addBodyParameter("Model", deviceModel);
 		params.addBodyParameter("SerialNum", deviceId2);
 		params.addBodyParameter("pickStatus", "1"); // 1：已经摘取  0：未摘取
-		http.send(HttpRequest.HttpMethod.POST, Utils.BATTERY_URL, params, new RequestCallBack<String>() {
+		http.send(HttpRequest.HttpMethod.POST, Utils.BATTERY_URL_USEING, params, new RequestCallBack<String>() {
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
@@ -143,10 +143,13 @@ public class BatteryWarningActivity extends BaseActivity {
 
 			@Override
 			public void onSuccess(ResponseInfo<String> responseInfo) {
-				MyApp.saveRemovedBatteryFlag(true);
+				if (!Utils.DEBUG) {
+					MyApp.saveRemovedBatteryFlag(true);
+					
+					PackageManager pm = getPackageManager();
+			        pm.setApplicationEnabledSetting(getPackageName(), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+				}
 				
-				PackageManager pm = getPackageManager();
-		        pm.setApplicationEnabledSetting(getPackageName(), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 				Toast.makeText(BatteryWarningActivity.this,getString(R.string.success), Toast.LENGTH_SHORT).show();
 			}
 		});

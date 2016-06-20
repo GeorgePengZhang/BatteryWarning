@@ -31,9 +31,9 @@
          \n &#160;&#160;4.Do not allow children or pets to bite or suck the battery. 
          \n &#160;&#160;5.Do not smash or pierce the battery,or expose it to high external pressure.</string>
     <string name="action_settings">setting</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="back">back</string>
-    <string name="next">next</string>
+    <string name="next">Next</string>
     <string name="confirm">confirm</string>
     <string name="batterywarning_hint">In order to ensure your safety, we would like to advise you to remove the battery from your Telpad dock. The Telpad will continue to operate via a plugged power adapter.</string>
     <string name="success">Operation successfully completed</string>
