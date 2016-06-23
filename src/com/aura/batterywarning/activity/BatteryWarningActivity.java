@@ -55,7 +55,7 @@ public class BatteryWarningActivity extends BaseActivity {
 			setContentMsg(Utils.DIALOG_TYPE_3);
 			break;
 		case Utils.DIALOG_TYPE_3:
-			sendDialogResult();
+			sendDialogResult(1);
 			AppManager.getAppManager().finishActivity(this);
 			break;
 
@@ -67,6 +67,20 @@ public class BatteryWarningActivity extends BaseActivity {
 
 	@Override
 	protected void OnCancel() {
+		
+		if (MyApp.isNetConnect()) {
+			switch (mType) {
+			case Utils.DIALOG_TYPE_0:
+			case Utils.DIALOG_TYPE_1:
+			case Utils.DIALOG_TYPE_2:
+			case Utils.DIALOG_TYPE_3:
+				sendDialogResult(0);
+				break;
+			default:
+				break;
+			}
+		}
+		
 		AppManager.getAppManager().finishActivity(this);
 	}
 	
@@ -120,7 +134,7 @@ public class BatteryWarningActivity extends BaseActivity {
 		}
 	}
 	
-	private void sendDialogResult() {
+	private void sendDialogResult(final int pickStatus) {
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
 		String deviceId2 = Utils.getModelNumber();
@@ -131,13 +145,16 @@ public class BatteryWarningActivity extends BaseActivity {
 
 		params.addBodyParameter("Model", deviceModel);
 		params.addBodyParameter("SerialNum", deviceId2);
-		params.addBodyParameter("pickStatus", "1"); // 1：已经摘取  0：未摘取
+		params.addBodyParameter("pickStatus", pickStatus+""); // 1：已经摘取  0：未摘取
 		http.send(HttpRequest.HttpMethod.POST, Utils.BATTERY_URL_USEING, params, new RequestCallBack<String>() {
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
 				Log.d("TAG", "onFailure:"+msg);
-				Toast.makeText(BatteryWarningActivity.this, getString(R.string.falied), Toast.LENGTH_SHORT).show();
+				if (pickStatus == 1) {
+					Toast.makeText(BatteryWarningActivity.this, getString(R.string.falied), Toast.LENGTH_SHORT).show();
+				}
+				
 				BatteryWarningService.startCheckTimer(mContext);
 			}
 
@@ -150,7 +167,9 @@ public class BatteryWarningActivity extends BaseActivity {
 			        pm.setApplicationEnabledSetting(getPackageName(), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 				}
 				
-				Toast.makeText(BatteryWarningActivity.this,getString(R.string.success), Toast.LENGTH_SHORT).show();
+				if (pickStatus == 1) {
+					Toast.makeText(BatteryWarningActivity.this,getString(R.string.success), Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 	}

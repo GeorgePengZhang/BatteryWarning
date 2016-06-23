@@ -18,17 +18,16 @@
           Telpad will return to nomal use.</string>
     -->
 
-    <string name="instructions1_hint">How to remove battery from Telpad dock? 
-         \n &#160;&#160;1.Dry your hands firstly. 
-         \n &#160;&#160;2.Undock tablet from dock phone,unplug adaptor and phone line. 
-         \n &#160;&#160;3.Open the battery cover at the bottom of dock phone.
-         \n &#160;&#160;4.Remove the dock phone battery from the battery case. 
-         \n &#160;&#160;5.Install the battery cover,plug adaptor and phone line,and then dock tablet on the dock phone.Telpad will return to nomal use.</string>
-    <string name="instructions2_hint">How to proper dispose of the removed battery? 
+    <string name="instructions1_hint">How to remove the battery from the Telpad dock :
+         \n &#160;&#160;1. Remove the Telpad from the dock, and unplug the adaptor and phone line.
+         \n &#160;&#160;2. Open the battery cover at the bottom of the dock.
+         \n &#160;&#160;3. Remove the battery from the battery case.
+         \n &#160;&#160;4. Put the battery cover back into place, and reconnect the plug adaptor and phone line.Put back the Telpad on the dock.</string>
+    <string name="instructions2_hint">How to properly dispose of the removed battery:
          \n &#160;&#160;1.Dispose of batteries in accordance with local, state and federal laws and regulations.
          \n &#160;&#160;2.Do not put batteries into your regular or bulk trash collection. 
          \n &#160;&#160;3.Do not put batteries in fire as they may explode. 
-         \n &#160;&#160;4.Do not allow children or pets to bite or suck the battery. 
+         \n &#160;&#160;4.Do not allow children or pets near the battery.
          \n &#160;&#160;5.Do not smash or pierce the battery,or expose it to high external pressure.</string>
     <string name="action_settings">setting</string>
     <string name="cancel">Cancel</string>
@@ -38,10 +37,10 @@
     <string name="batterywarning_hint">In order to ensure your safety, we would like to advise you to remove the battery from your Telpad dock. The Telpad will continue to operate via a plugged power adapter.</string>
     <string name="success">Operation successfully completed</string>
 	<string name="falied">Operation falied</string>
-	<string name="state_step_a">Please read \"How to remove battery from Telpad dock\" and \"How to proper disposal of the removed battery\" carefully.</string>
+	<string name="state_step_a">Please read \"How to remove battery from Telpad dock\" and \"How to properly dispose of the removed battery\" carefully.</string>
 	<string name="read_now">Read now</string>
 	<string name="read_later">Read later</string>
-	<string name="state_step_b">I have read all and can remove battery from Telpad dock new.</string>
+	<string name="state_step_b">I have read and will follow all guidelines regarding proper dock battery handling.</string>
 	<string name="remove_now">Remove now</string>
 	<string name="remove_later">Remove later</string>
 	<string name="battery_remove_hint">The battery in my Telpad dock has been removed already.</string>

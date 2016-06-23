@@ -26,7 +26,7 @@ public class Utils {
 	
 	
 	public static final String BATTERY_URL_TEST = "http://192.168.1.30:45232/webStatisticsSer/web/addDeviceServlet"; //上传电池扣取状态 本地测试网络地址
-	public static final String BATTERY_URL = "http://112.206.228.34:45266/webStatisticsSer/web/addDeviceServlet"; //上传电池扣取状态 网络地址
+	public static final String BATTERY_URL = "http://112.206.228.34:45232/webStatisticsSer/web/addDeviceServlet"; //上传电池扣取状态 网络地址
 	public static final String BATTERY_URL_USEING = DEBUG ? BATTERY_URL_TEST : BATTERY_URL;
 	
 	public static final String BATTERY_CHECKING_TIMER = "com.aura.batterywaring.CHECKING";
