@@ -36,6 +36,8 @@ public class Utils {
 	public static final int DIALOG_TYPE_1 = 1;
 	public static final int DIALOG_TYPE_2 = 2;
 	public static final int DIALOG_TYPE_3 = 3;
+	public static final int DIALOG_TYPE_4 = 4;
+	public static final int DIALOG_TYPE_5 = 5;
 	
 	public static final String MODEL_MA7 = "Aura_TELPAD_MA7_tablet";
 	public static final String MODEL_MT7 = "Aura_TELPAD_MT7_tablet";

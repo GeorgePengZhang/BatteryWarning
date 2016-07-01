@@ -30,6 +30,8 @@
         <activity
             android:name="com.aura.batterywarning.activity.BatteryWarningActivity"
             android:excludeFromRecents="true"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:theme="@android:style/Theme.Holo.Dialog" >
             
             <intent-filter >

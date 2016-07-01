@@ -66,6 +66,10 @@ public abstract class BaseActivity extends Activity {
 	}
 
 	public void setContentLayout(int resid) {
+		if (content != null) {
+			content.removeAllViews();
+		}
+		
 		View.inflate(this, resid, content);
 	}
 	
@@ -80,6 +84,14 @@ public abstract class BaseActivity extends Activity {
 	
 	public void setCancelText(String str) {
 		btn_cancel.setText(str);
+	}
+	
+	public void setOKEnable(boolean enabled) {
+		btn_ok.setEnabled(enabled);
+	}
+	
+	public void setCancelEnable(boolean enabled) {
+		btn_cancel.setEnabled(enabled);
 	}
 	
 	public void setStateTVText(String msg) {
