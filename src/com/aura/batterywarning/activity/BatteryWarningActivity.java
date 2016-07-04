@@ -1,6 +1,8 @@
 package com.aura.batterywarning.activity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,13 +31,25 @@ public class BatteryWarningActivity extends BaseActivity {
 	private int mType;
 	private EditText name;
 	private String userName = "";
+	private SharedPreferences preferences;
+	
+	private static final String PREFERENCES_STATE_OPERATE = "state_operate";
+	private static final String PREFERENCES_TYPE = "type";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-		setContentMsg(Utils.DIALOG_TYPE_0);
+		
+		int type = Utils.DIALOG_TYPE_0;
+		
+		preferences = getSharedPreferences(PREFERENCES_STATE_OPERATE, Context.MODE_PRIVATE);
+		if (preferences != null) {
+			type = preferences.getInt(PREFERENCES_TYPE, Utils.DIALOG_TYPE_0);
+		}
+		 
+		setContentMsg(type);
 	}
 	
 	
@@ -57,6 +71,12 @@ public class BatteryWarningActivity extends BaseActivity {
 			}
 			
 			setContentMsg(Utils.DIALOG_TYPE_2);
+			if (preferences != null) {
+				Editor edit = preferences.edit();
+				edit.putInt(PREFERENCES_TYPE, Utils.DIALOG_TYPE_2);
+				edit.commit();
+			}
+			
 			break;
 		case Utils.DIALOG_TYPE_2:
 			setContentMsg(Utils.DIALOG_TYPE_3);
@@ -151,7 +171,11 @@ public class BatteryWarningActivity extends BaseActivity {
 			break;
 			
 		case Utils.DIALOG_TYPE_2:
-			showBatterywarning();
+			if (MyApp.isNetConnect()) {
+				showBatterywarning();
+			} else {
+				showConnectWifi();
+			}
 			break;
 			
 		case Utils.DIALOG_TYPE_3:
