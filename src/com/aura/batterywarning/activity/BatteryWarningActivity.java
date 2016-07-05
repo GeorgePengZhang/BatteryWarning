@@ -35,6 +35,7 @@ public class BatteryWarningActivity extends BaseActivity {
 	
 	private static final String PREFERENCES_STATE_OPERATE = "state_operate";
 	private static final String PREFERENCES_TYPE = "type";
+	private static final String PREFERENCES_NAME = "name";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +75,18 @@ public class BatteryWarningActivity extends BaseActivity {
 			if (preferences != null) {
 				Editor edit = preferences.edit();
 				edit.putInt(PREFERENCES_TYPE, Utils.DIALOG_TYPE_2);
+				edit.putString(PREFERENCES_NAME, userName);
 				edit.commit();
 			}
 			
 			break;
 		case Utils.DIALOG_TYPE_2:
-			setContentMsg(Utils.DIALOG_TYPE_3);
+			if (MyApp.isNetConnect()) {
+				setContentMsg(Utils.DIALOG_TYPE_3);
+			} else {
+				BatteryWarningService.openSettings(mContext);
+				AppManager.getAppManager().finishActivity(this);
+			}
 			break;
 		case Utils.DIALOG_TYPE_3:
 			setContentMsg(Utils.DIALOG_TYPE_4);
@@ -88,6 +95,9 @@ public class BatteryWarningActivity extends BaseActivity {
 			setContentMsg(Utils.DIALOG_TYPE_5);
 			break;
 		case Utils.DIALOG_TYPE_5:
+			setContentMsg(Utils.DIALOG_TYPE_6);
+			break;
+		case Utils.DIALOG_TYPE_6:
 			sendDialogResult(1);
 			AppManager.getAppManager().finishActivity(this);
 			break;
@@ -109,6 +119,7 @@ public class BatteryWarningActivity extends BaseActivity {
 			case Utils.DIALOG_TYPE_3:
 			case Utils.DIALOG_TYPE_4:
 			case Utils.DIALOG_TYPE_5:
+			case Utils.DIALOG_TYPE_6:
 				sendDialogResult(0);
 				break;
 			default:
@@ -181,10 +192,16 @@ public class BatteryWarningActivity extends BaseActivity {
 		case Utils.DIALOG_TYPE_3:
 			showInstructions();
 			break;
+			
 		case Utils.DIALOG_TYPE_4:
+			showBatteryIsRemoved();
+			break;
+			
+		case Utils.DIALOG_TYPE_5:
 			showBatteryRemove();
 			break;
-		case Utils.DIALOG_TYPE_5:
+			
+		case Utils.DIALOG_TYPE_6:
 			showLegalNotices();
 			break;
 
@@ -227,6 +244,12 @@ public class BatteryWarningActivity extends BaseActivity {
 		setCancelText(getString(R.string.not_yet));
 	}
 
+	private void showBatteryIsRemoved() {
+		txt.setText(R.string.battery_is_removed_hint);
+		setStateGone();
+		setOKText(getString(R.string.next));
+		setCancelText(getString(R.string.cancel));
+	}
 
 	private void showInstructions() {
 		txt.setText(getString(R.string.instructions1_hint)+"\n\n"+getString(R.string.instructions2_hint));
@@ -252,13 +275,16 @@ public class BatteryWarningActivity extends BaseActivity {
 	//*********************************************************************************
 	
 	
-	
 	private void sendDialogResult(final int pickStatus) {
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
 		String deviceId2 = Utils.getModelNumber();
 		Log.d("TAG","sendDialogResult deviceId2:" + deviceId2);
 
+		if (preferences != null) {
+			userName = preferences.getString(PREFERENCES_NAME, "");
+		}
+		
 		String deviceModel = android.os.Build.MODEL;// 设置型号
 		Log.d("TAG","sendDialogResult deviceModel:" + deviceModel+",name:"+userName);
 

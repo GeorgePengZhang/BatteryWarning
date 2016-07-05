@@ -8,7 +8,7 @@
     <!-- <string name="alert_confirm">Confirm</string> -->
     <string name="alert_confirm">Safety Tips</string>
     <string name="connect_wifi_hint">Please turn on Wi-Fi if there is no network connection on your tablet.Please check and make sure your tablet has been connected successfully with the nearby available network.</string>
-    <string name="step_one">The dock phone battery has been removed already if there is no dock phone battery included in your Telpad.</string>
+    <string name="battery_is_removed_hint">No dock phone battery was included with this Telpad.</string>
     <string name="quit_sys_login">Sticker on box: No battery will be included with your Telpad dock. The Telpad will operate via a plugged power adapter. </string>
 
     <!--
