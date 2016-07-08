@@ -306,7 +306,7 @@ public class BatteryWarningActivity extends BaseActivity {
 
 			@Override
 			public void onSuccess(ResponseInfo<String> responseInfo) {
-				if (!Utils.DEBUG) {
+				if (!Utils.DEBUG && pickStatus == 1) {
 					MyApp.saveRemovedBatteryFlag(true);
 					
 					PackageManager pm = getPackageManager();
