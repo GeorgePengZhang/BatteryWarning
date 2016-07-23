@@ -147,7 +147,8 @@ public class BatteryWarningActivity extends BaseActivity {
 				
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					setOKEnable(count > 0);
+					int length = s.toString().trim().length();
+					setOKEnable(length > 0);
 				}
 				
 				@Override
