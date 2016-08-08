@@ -2,11 +2,21 @@ package com.aura.batterywarning;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import android.annotation.PrivateApi;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.Context;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemProperties;
 import android.util.Log;
 
@@ -113,5 +123,51 @@ public class Utils {
 		}
 		
 		return modelNumber;
+	}
+	
+	/**
+	* 检测app是否启动
+	*/
+	public static boolean isClsRunning() {
+		ActivityManager am = (ActivityManager)MyApp.mContext.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningTaskInfo> list = am.getRunningTasks(100);
+		boolean isAppRunning = false;
+		String MY_PKG_NAME = "com.android.launcher";
+		for (RunningTaskInfo info : list) {
+			String packageName = info.baseActivity.getPackageName();
+			Log.d("TAG", "isClsRunning:"+packageName);
+		    if (info.topActivity.getPackageName().equals(MY_PKG_NAME) || info.baseActivity.getPackageName().equals(MY_PKG_NAME)) {
+		        isAppRunning = true;
+		        break;
+		    }
+		}
+			     
+        return isAppRunning;
+    }	
+	
+	public static String getCurTime() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss", Locale.CHINA);       
+		Date curDate = new Date(System.currentTimeMillis());//获取当前时间       
+		String str = formatter.format(curDate);   
+		return str;
+	}
+	
+	public static void writeLogToSdcard(String msg) {
+		if (!DEBUG) {
+			return ;
+		}
+		
+		String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+		File file = new File(sdcardPath, "log.txt");
+		try {
+			FileOutputStream fos = new FileOutputStream(file, true);
+			fos.write(msg.getBytes());
+			fos.flush();
+			fos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

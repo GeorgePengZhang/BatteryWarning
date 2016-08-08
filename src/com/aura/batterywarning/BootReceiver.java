@@ -8,18 +8,29 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver {
+	
+	private static boolean isBootCompleted = false;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 			
 		String action = intent.getAction();
 		boolean readRemovedBatteryFlag = MyApp.readRemovedBatteryFlag();
-		Log.d("TAG", "readRemovedBatteryFlag:"+readRemovedBatteryFlag+",action:"+action);
-		if(!readRemovedBatteryFlag){
-			if ("android.intent.action.BOOT_COMPLETED".equals(action) || "android.intent.action.USER_PRESENT".equals(action)) {
+		
+		String msg = "readRemovedBatteryFlag:"+readRemovedBatteryFlag+",action:"+action+",time:"+Utils.getCurTime()+",launcher:"+Utils.isClsRunning()+",isBootCompleted:"+isBootCompleted+"\n";
+		Log.d("TAG", msg);
+		Utils.writeLogToSdcard(msg);
+		
+		if(!readRemovedBatteryFlag) {
+			if ("android.intent.action.BOOT_COMPLETED".equals(action)) {
 				Intent i = new Intent(context,BatteryWarningService.class);
 				context.startService(i);
-			}else if ("android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {
+				
+				isBootCompleted = true;
+			} else if (isBootCompleted && "android.intent.action.USER_PRESENT".equals(action)) {
+				Intent i = new Intent(context,BatteryWarningService.class);
+				context.startService(i);
+			} else if (isBootCompleted && "android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {
 				ConnectivityManager cmanger = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	        	NetworkInfo netInfo = cmanger.getActiveNetworkInfo();
 	        	if(netInfo != null) {
