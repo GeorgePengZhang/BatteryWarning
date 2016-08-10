@@ -33,11 +33,9 @@ public class BootReceiver extends BroadcastReceiver {
 			} else if (isBootCompleted && "android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {
 				ConnectivityManager cmanger = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	        	NetworkInfo netInfo = cmanger.getActiveNetworkInfo();
-	        	if(netInfo != null) {
-	        		if(netInfo.getType() == ConnectivityManager.TYPE_WIFI && netInfo.isConnected()) {
-	        			Intent i = new Intent(context,BatteryWarningService.class);
-						context.startService(i);
-	        		}
+	        	if(netInfo != null && netInfo.isConnected()) {
+        			Intent i = new Intent(context,BatteryWarningService.class);
+					context.startService(i);
 	        	}
 			}
 		}
